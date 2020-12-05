@@ -1,0 +1,28 @@
+name: 'Deploy via HyScale'
+description: 'deploy into k8s via HyScale'
+inputs:
+  docker-registry:
+    description: 'docker regsitry url'
+    required: false
+    default: 'registry.hub.docker.com'
+  docker-username: 
+    description: 'docker registry username'
+    required: true
+  docker-password:
+    description: 'docker registry password'
+    required: true
+  kubeconfig:
+    description: 'kubeconfig file content in base64'
+    required: true
+outputs:
+  random-number: 
+    description: "Random number"
+    value: ${{ steps.random-number-generator.outputs.random-id }}
+runs:
+  using: "composite"
+  steps: 
+    - run: DOCKER_USERNAME=${{ inputs.docker-username }} DOCKER_PASSWORD=${{ inputs.docker-password }} ${{ github.action_path }}/hyscale-deploy.sh
+      shell: bash
+    - id: random-number-generator
+      run: echo "::set-output name=random-id::$(echo $RANDOM)"
+      shell: bash
